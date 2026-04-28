@@ -1,0 +1,8 @@
+{
+  "name": "Ethio AI",
+  "description": "Real-time voice and text chat powered by Gemini Live API, enabling bidirectional streaming conversations.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": []
+}

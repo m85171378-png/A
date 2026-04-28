@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+body {
+  @apply bg-zinc-950 text-zinc-100 min-h-screen font-sans;
+}
+
+/* Custom animations for the AI voice visualizer */
+@keyframes pulse-slow {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+.chat-gradient {
+  background: radial-gradient(circle at top right, rgba(168, 85, 247, 0.15), transparent),
+              radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.15), transparent);
+}

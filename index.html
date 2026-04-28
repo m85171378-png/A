@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ethio AI - Real-time Voice & Text</title>
+  <link rel="stylesheet" href="/index.css">
+</head>
+<body class="chat-gradient flex flex-col items-center justify-center p-4">
+  <div id="app" class="w-full max-w-4xl h-[90vh] flex flex-col bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl shadow-black/50">
+    <!-- Header -->
+    <header class="p-6 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/80">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M12 2a10 10 0 1 0 10 10H12V2Z"/><path d="M12 12L2.1 12c.5-4.4 3.9-7.9 8.3-8.4V12Z"/><path d="M12 12v10a10 10 0 0 0 10-10H12Z"/></svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-zinc-100">Ethio AI</h1>
+          <p class="text-xs text-zinc-500 font-medium uppercase tracking-widest">Live Conversation</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1 bg-zinc-800 rounded-lg border border-zinc-700">
+          <label for="voice-select" class="text-[10px] font-bold uppercase text-zinc-500">Voice</label>
+          <select id="voice-select" class="bg-transparent text-xs font-semibold text-zinc-300 focus:outline-none cursor-pointer">
+            <option value="Zephyr" selected>Zephyr (Default)</option>
+            <option value="Puck">Puck</option>
+            <option value="Charon">Charon</option>
+            <option value="Kore">Kore</option>
+            <option value="Fenrir">Fenrir</option>
+          </select>
+        </div>
+        <div id="status" class="flex items-center gap-2 px-3 py-1 bg-zinc-800 rounded-full border border-zinc-700">
+          <div id="status-dot" class="w-2 h-2 rounded-full bg-zinc-600"></div>
+          <span id="status-text" class="text-xs font-semibold text-zinc-400">Disconnected</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex overflow-hidden lg:flex-row flex-col">
+      <!-- Voice Interaction Area -->
+      <div class="flex-1 flex flex-col items-center justify-center p-8 bg-black/20 relative">
+        <div id="visualizer-container" class="relative flex items-center justify-center">
+          <!-- Background Pulses -->
+          <div id="pulse-1" class="absolute w-44 h-44 rounded-full bg-purple-600/10 animate-pulse-slow"></div>
+          <div id="pulse-2" class="absolute w-64 h-64 rounded-full bg-blue-600/5 animate-pulse-slow" style="animation-delay: 1.5s"></div>
+          
+          <!-- AI Orb -->
+          <div id="ai-orb" class="w-32 h-32 rounded-full bg-gradient-to-tr from-purple-600 to-blue-500 shadow-2xl shadow-purple-500/40 flex items-center justify-center relative z-10 transition-transform duration-300">
+            <svg id="mic-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          </div>
+        </div>
+
+        <div class="mt-8 text-center max-w-sm">
+          <h2 id="ai-status" class="text-zinc-200 font-medium mb-1">Ethio AI is listening...</h2>
+          <p id="transcription-hint" class="text-sm text-zinc-500 leading-relaxed italic">"Try saying: Tell me about Ethiopia's history or what's the weather like."</p>
+        </div>
+
+        <!-- Controls Area -->
+        <div class="mt-12 flex items-center gap-6">
+          <button id="toggle-mic" class="p-4 rounded-2xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition-all active:scale-95 group" title="Toggle Microphone">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400 group-hover:text-zinc-100"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          </button>
+          <button id="connect-btn" class="px-8 py-3 rounded-2xl bg-white text-zinc-950 font-bold hover:bg-zinc-200 transition-all active:scale-95 shadow-xl shadow-white/10 flex items-center gap-2">
+            Connect
+          </button>
+          <button id="toggle-audio" class="p-4 rounded-2xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition-all active:scale-95 group" title="Toggle AI Sound">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400 group-hover:text-zinc-100"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Text Chat Sidebar -->
+      <aside class="lg:w-80 w-full border-l border-zinc-800 bg-zinc-900/30 flex flex-col max-h-full">
+        <div class="p-4 border-b border-zinc-800/50 flex items-center justify-between">
+          <span class="text-xs font-bold uppercase text-zinc-500 tracking-wider">Transcription & Chat</span>
+          <button id="clear-chat" class="text-[10px] uppercase font-bold text-zinc-600 hover:text-zinc-400 transition-colors">Clear</button>
+        </div>
+        
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-zinc-800">
+          <!-- Messages will appear here -->
+        </div>
+
+        <div class="p-4 border-t border-zinc-800 bg-black/10">
+          <div class="relative">
+            <input id="chat-input" type="text" placeholder="Type a message..." class="w-full bg-zinc-800/50 border border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-600/50 transition-all placeholder:text-zinc-600">
+            <button id="send-btn" class="absolute right-2 top-1.5 p-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition-colors disabled:opacity-50">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="/index.ts"></script>
+</body>
+</html>
